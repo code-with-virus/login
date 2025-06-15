@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Portal</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #667eea;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    select {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    #google-btn {
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Login Portal</h2>
+
+    <select id="roleSelect" onchange="handleRoleChange()">
+      <option value="student">Student</option>
+      <option value="teacher">Teacher</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <div id="manualLogin" style="display: none;">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="handleManualLogin()">Login</button>
+    </div>
+
+    <div id="googleLogin">
+      <div id="g_id_onload"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleGoogleLogin"
+           data-auto_prompt="false">
+      </div>
+
+      <div class="g_id_signin"
+           data-type="standard"
+           data-size="large"
+           data-theme="outline"
+           data-text="sign_in_with"
+           data-shape="rectangular"
+           data-logo_alignment="left">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleRoleChange() {
+      const role = document.getElementById("roleSelect").value;
+      const manualLogin = document.getElementById("manualLogin");
+      const googleLogin = document.getElementById("googleLogin");
+
+      if (role === "student") {
+        manualLogin.style.display = "none";
+        googleLogin.style.display = "block";
+      } else {
+        manualLogin.style.display = "block";
+        googleLogin.style.display = "none";
+      }
+    }
+
+    async function handleManualLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("roleSelect").value;
+
+      const res = await fetch('/manual-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role })
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    function handleGoogleLogin(response) {
+      console.log("Google login success:", response);
+      alert("Student login successful using Google!");
+    }
+  </script>
+
+</body>
+</html>
